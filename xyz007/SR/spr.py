@@ -38,7 +38,28 @@ def isReflexive(left, mid, right):
     b = np.array(mid)
     c = np.array(right)
     det = np.linalg.det(np.array([a-b, c-b]))
-    return det > 0
+    return det < 0
+
+'''
+given two vertices and their corresponding polygons,
+are the two vertices bitangent?
+'''
+def areBitangent(v1, v2, poly1, poly2):
+    # (f(p1, p2, p5) xor f(p3, p2, p5)) or (f(p4, p5, p2) xor f(p6, p5, p2))
+    # left1 -> p1, mid1 -> p2, right1 -> p3
+    # left2 -> p4, mid2 -> p5, right2 -> p6
+
+    #get indices of vertices being analyzed
+    mid1_index, mid2_index = poly1.index(v1), poly2.index(v2)
+
+    #get the physical vertices themselves
+    left1, left2 = poly1[mid1_index-1], poly2[mid2_index-1]
+    mid1, mid2   = poly1[mid1_index], poly2[mid2_index]
+    right1, right2 = poly1[(mid1_index + 1) % len(poly1)], poly2[(mid2_index + 1) % len(poly2)]
+
+    f = isReflexive
+    return (f(left1, mid1, mid2) != f(right1, mid1, mid2)) or (f(left2, mid2, mid1) != f(right2, mid2, mid1))
+    
 '''
 Compute the roadmap graph
 '''
