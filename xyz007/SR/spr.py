@@ -34,21 +34,37 @@ Compute the roadmap graph
 def computeSPRoadmap(polygons, reflexVertices):
 
     vertexMap = dict()
+    revVertexMap = dict()
     reflexMap = dict()
     adjacencyListMap = dict()
     
     for i in range(1, len(reflexVertices) + 1):
         vertexMap[i] = reflexVertices[i-1]
-        reflexMap[tuple(reflexVertices[i-1])] = reflexVertices[i-1] 
+        reflexMap[tuple(reflexVertices[i-1])] = reflexVertices[i-1]
+        revVertexMap[tuple(reflexVertices[i-1])] = i
 
+    #this is just to get the 'easy' edges around the polygons
     for polygon in polygons:
         for i in range(len(polygon)):
             print(polygon[i-1])
             left = reflexMap.get(tuple(polygon[i - 1]))
             right = reflexMap.get(tuple(polygon[(i+1) % len(polygon)]))
-            if left != None:
+            mid = reflexMap.get(tuple(polygon[i]))
+            if left != None and mid != None:
                 #add left to adjacencyListMap
-                pass
+                a, b = revVertexMap.get(tuple(mid)), revVertexMap.get(tuple(left))
+                adj = adjacencyListMap.get(a)
+                if adj == None:
+                    adjacencyListMap[a] = []
+                adjacencyListMap[a].append([b, distance(mid, left)])
+            if right != None and mid != None:
+                #add right to adjacencyListMap
+                a, b = revVertexMap.get(tuple(mid)), revVertexMap.get(tuple(right))
+                adj = adjacencyListMap.get(a)
+                if adj == None:
+                    adjacencyListMap[a] = []
+                adjacencyListMap[a].append([b, distance(mid, right)])
+
 
 
     # Your code goes here
