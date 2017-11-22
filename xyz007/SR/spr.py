@@ -39,14 +39,16 @@ def computeSPRoadmap(polygons, reflexVertices):
     
     for i in range(1, len(reflexVertices) + 1):
         vertexMap[i] = reflexVertices[i-1]
-        reflexMap[reflexVertices[i-1]] = reflexVertices[i-1] 
+        reflexMap[tuple(reflexVertices[i-1])] = reflexVertices[i-1] 
 
     for polygon in polygons:
         for i in range(len(polygon)):
-            left = reflexMap[polygon[i - 1]]
-            right = reflexMap[polygon[(i+1) % len(polygon)]]
+            print(polygon[i-1])
+            left = reflexMap.get(tuple(polygon[i - 1]))
+            right = reflexMap.get(tuple(polygon[(i+1) % len(polygon)]))
             if left != None:
                 #add left to adjacencyListMap
+                pass
 
 
     # Your code goes here
