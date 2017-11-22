@@ -58,7 +58,7 @@ def areBitangent(v1, v2, poly1, poly2):
     right1, right2 = poly1[(mid1_index + 1) % len(poly1)], poly2[(mid2_index + 1) % len(poly2)]
 
     f = isReflexive
-    return (f(left1, mid1, mid2) != f(right1, mid1, mid2)) or (f(left2, mid2, mid1) != f(right2, mid2, mid1))
+    return not ((f(left1, mid1, mid2) != f(right1, mid1, mid2)) or (f(left2, mid2, mid1) != f(right2, mid2, mid1)))
     
 '''
 Compute the roadmap graph
