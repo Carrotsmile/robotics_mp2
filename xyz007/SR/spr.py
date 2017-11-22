@@ -82,7 +82,7 @@ else it returns false
 def areVisible(v1, v2, otherPolygons):
     for polygon in otherPolygons:
         for p1, p2 in zip(polygon, polygon[1:] + [polygon[0]]):
-            print((v1, v2, p1, p2))
+            #print((v1, v2, p1, p2))
             if lineSegmentIntersect(v1, v2, p2, p1) != lineSegmentIntersect(v1, v2, p1, p2):
                 return False
     return True
