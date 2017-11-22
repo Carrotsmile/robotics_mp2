@@ -29,6 +29,16 @@ def distance(v1, v2):
     a = (v1[0] - v2[0]) ** 2
     b = (v1[1] - v2[1]) ** 2
     return sqrt(a + b)
+
+'''
+find if three vertices are reflective
+'''
+def isReflexive(left, mid, right):
+    a = np.array(left)
+    b = np.array(mid)
+    c = np.array(right)
+    det = np.linalg.det(np.array([a-b, c-b]))
+    return det > 0
 '''
 Compute the roadmap graph
 '''
