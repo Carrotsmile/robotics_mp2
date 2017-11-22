@@ -38,6 +38,7 @@ def computeSPRoadmap(polygons, reflexVertices):
     reflexMap = dict()
     adjacencyListMap = dict()
     
+    #create dictionaries for convience
     for i in range(1, len(reflexVertices) + 1):
         vertexMap[i] = reflexVertices[i-1]
         reflexMap[tuple(reflexVertices[i-1])] = reflexVertices[i-1]
@@ -65,8 +66,7 @@ def computeSPRoadmap(polygons, reflexVertices):
                     adjacencyListMap[a] = []
                 adjacencyListMap[a].append([b, distance(mid, right)])
 
-
-
+    
     # Your code goes here
     # You should check for each pair of vertices whether the
     # edge between them should belong to the shortest path
