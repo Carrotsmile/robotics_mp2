@@ -4,6 +4,7 @@ from math import sqrt
 '''
 Report reflexive vertices
 '''
+#http://planning.cs.uiuc.edu/node271.html#fig:bitangentcomp
 def findReflexiveVertices(polygons):
     vertices=[]
     
