@@ -59,7 +59,23 @@ def areBitangent(v1, v2, poly1, poly2):
 
     f = isReflexive
     return not ((f(left1, mid1, mid2) != f(right1, mid1, mid2)) or (f(left2, mid2, mid1) != f(right2, mid2, mid1)))
-    
+
+'''
+test if line segments intersect with each other 
+by solving system of equation for two seperate parametric
+equations
+'''
+def lineSegmentIntersect(a1, a2, b1, b2):
+    A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
+    A = np.array([A1-A2, B2-B1])
+    b = (B2 - A2)
+    try:
+        x = np.linalg.solve(A, b)
+        return all(map(lambda y: 0 <= y <= 1, x))
+    except:
+        return False
+
+
 '''
 Compute the roadmap graph
 '''
