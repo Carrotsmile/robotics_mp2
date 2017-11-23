@@ -142,6 +142,9 @@ def computeSPRoadmap(polygons, reflexVertices):
                 if(adjacencyListMap.get(i1) == None):
                     adjacencyListMap.put(i1, [])
                 adjacencyListMap[i1].append([i2, dis])
+                if(adjacencyListMap.get(i2) == None):
+                    adjacencyListMap.put(i2, [])
+                adjacencyListMap[i2].append([i1, dis])
 
     # Your code goes here
     # You should check for each pair of vertices whether the
