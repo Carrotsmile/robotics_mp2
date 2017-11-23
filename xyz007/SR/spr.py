@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import itertools as it
 from math import sqrt
 '''
 Report reflexive vertices
@@ -125,7 +126,23 @@ def computeSPRoadmap(polygons, reflexVertices):
                     adjacencyListMap[a] = []
                 adjacencyListMap[a].append([b, distance(mid, right)])
 
-    
+    #creates all pairs of polygons
+    polypairs = list(it.combinations(polygons, 2))
+    for poly1, poly2 in polypairs:
+        pointpairs = list(it.product(poly1, poly2))
+        otherpolies = filter(lambda poly: poly != poly1 and poly != poly2, polygons)
+        for p1, p2 in pointpairs:
+            #check if p1 and p2 are reflex
+            i1 = revVertexMap.get(tuple(p1))
+            i2 = revVertexMap.get(tuple(p2))
+            v = areVisible(p1, p2, otherpolies)
+            bi = areBitangent(p1, p2, poly1, poly2)
+            if v and bi and (i1 != None) and (i2 != None):
+                dis = distance(p1, p2)
+                if(adjacencyListMap.get(i1) == None):
+                    adjacencyListMap.put(i1, [])
+                adjacencyListMap[i1].append([i2, dis])
+
     # Your code goes here
     # You should check for each pair of vertices whether the
     # edge between them should belong to the shortest path
