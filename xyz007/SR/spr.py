@@ -192,7 +192,7 @@ def uniformCostSearch(adjListMap, start, goal):
     while(len(openHeap) > 0):
         expNode = heapq.heappop(openHeap)
         print expNode
-        if expNode[0] == goal:
+        if expNode[1] == goal:
             #trace through cameFrom to find the path
             result_path = []
             currNode = goal
@@ -203,8 +203,10 @@ def uniformCostSearch(adjListMap, start, goal):
         for neighbor in adjListMap.get(expNode[1]):
             if closedSet.get(neighbor[0]) != None:
                 continue
-
-            t_gScore = gScore[expNode] + neighbor[1]
+            print type(neighbor)
+            print expNode
+            print gScore
+            t_gScore = gScore[expNode[1]] + neighbor[1]
             if gScore.get(neighbor[0]) != None and gScore.get(neighbor[0]) <= t_gScore:
                 continue
 
