@@ -108,7 +108,7 @@ def computeSPRoadmap(polygons, reflexVertices):
     #this is just to get the 'easy' edges around the polygons
     for polygon in polygons:
         for i in range(len(polygon)):
-            print(polygon[i-1])
+            #print(polygon[i-1])
             left = reflexMap.get(tuple(polygon[i - 1]))
             right = reflexMap.get(tuple(polygon[(i+1) % len(polygon)]))
             mid = reflexMap.get(tuple(polygon[i]))
@@ -191,7 +191,6 @@ def uniformCostSearch(adjListMap, start, goal):
 
     while(len(openHeap) > 0):
         expNode = heapq.heappop(openHeap)
-        print expNode
         if expNode[1] == goal:
             #trace through cameFrom to find the path
             result_path = []
@@ -199,18 +198,24 @@ def uniformCostSearch(adjListMap, start, goal):
             while cameFrom.get(currNode) != None:
                 result_path.append(currNode)
                 currNode = cameFrom.get(currNode)
-            return result_path[::-1], len(result_path)
+            result_path.append(start)
+            result_path = result_path[::-1]
+            len_results = 0
+            for p1, p2 in zip(result_path[:len(result_path) -1], result_path[1:]):
+                a = adjListMap.get(p1)
+                for edge in a:
+                    if edge[0] == p2:
+                        len_results += edge[1]
+                        break
+            return result_path, len_results
         for neighbor in adjListMap.get(expNode[1]):
             if closedSet.get(neighbor[0]) != None:
                 continue
-            print type(neighbor)
-            print expNode
-            print gScore
             t_gScore = gScore[expNode[1]] + neighbor[1]
             if gScore.get(neighbor[0]) != None and gScore.get(neighbor[0]) <= t_gScore:
                 continue
 
-            cameFrom[neighbor[0]] = expNode
+            cameFrom[neighbor[0]] = expNode[1] #test
             gScore[neighbor[0]] = t_gScore
 
             temp = (gScore[neighbor[0]], neighbor[0])
