@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import itertools as it
 import heapq
+import visualize
 from math import sqrt
 '''
 Report reflexive vertices
@@ -255,7 +256,14 @@ def updateRoadmap(polygons, vertexMap, adjListMap, x1, y1, x2, y2):
             v = vertexMap.get(i)
             if v in polygon:
                 polyMap[i] = polygon
-
+    #creates edge between start and goal if they are visible
+    if areVisible(start, goal, polygons):
+        if updatedALMap.get(startLabel) == None:
+            updatedALMap[startLabel] = []
+        if updatedALMap.get(goalLabel) == None:
+            updatedALMap[goalLabel] = []
+        updatedALMap[startLabel].append(goal, distance(start,goal))
+        updatedALMap[goalLabel].append(goal, distance(start,goal))
     for i in vertexMap:
         v = vertexMap.get(i)
         f_poly = polyMap[i]
@@ -281,7 +289,6 @@ def updateRoadmap(polygons, vertexMap, adjListMap, x1, y1, x2, y2):
             if updatedALMap.get(i) == None:
                 updatedALMap[i] = []
             updatedALMap[i].append([goalLabel, goal_dist])
-
 
     # Your code goes here. Note that for convenience, we 
     # let start and goal have vertex labels 0 and -1,
@@ -348,5 +355,5 @@ if __name__ == "__main__":
     print str(path)
     print "Final path length:" + str(length)
     
-
+    visualize.drawEverything(polygons, updatedALMap, vertexMap)
     # Extra visualization elements goes here
