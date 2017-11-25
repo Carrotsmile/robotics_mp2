@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import itertools as it
+import heapq
 from math import sqrt
 '''
 Report reflexive vertices
@@ -146,11 +147,6 @@ def computeSPRoadmap(polygons, reflexVertices):
                     adjacencyListMap.put(i2, [])
                 adjacencyListMap[i2].append([i1, dis])
 
-    # Your code goes here
-    # You should check for each pair of vertices whether the
-    # edge between them should belong to the shortest path
-    # roadmap. 
-    #
     # Your vertexMap should look like
     # {1: [5.2,6.7], 2: [9.2,2.3], ... }
     #
@@ -162,12 +158,71 @@ def computeSPRoadmap(polygons, reflexVertices):
     return vertexMap, adjacencyListMap
 
 '''
+Special bitangent, where only one of the points neighbors are looked at
+because the other point is a goal/start location
+'''
+def specBitangent(s1, v1, poly1):
+    i1 = poly1.index(v1)
+    left = poly1[i1-1]
+    right = poly1[(i1+1)%len(poly1)]
+    a, b = isReflexive(s1, v1, left), isReflexive(s1, v1, right)
+    return a == b
+
+'''
 Perform uniform cost search 
 '''
 def uniformCostSearch(adjListMap, start, goal):
+
+    #essentially just translated from the psuedocode on wikipedia
     path = []
     pathLength = 0
     
+    gScore = dict()
+    #fScore = dict()
+    cameFrom = dict()
+    openSet = dict()
+    openHeap = []
+    closedSet = dict()
+
+    gScore[start] = 0
+    t = (gScore[start], start)
+    heapq.heappush(openHeap, t)
+    openSet[start] = t
+
+    while(len(openHeap) > 0):
+        expNode = heapq.heappop(openHeap)
+        print expNode
+        if expNode[0] == goal:
+            #trace through cameFrom to find the path
+            result_path = []
+            currNode = goal
+            while cameFrom.get(currNode) != None:
+                result_path.append(currNode)
+                currNode = cameFrom.get(currNode)
+            return result_path[::-1], len(result_path)
+        for neighbor in adjListMap.get(expNode[1]):
+            if closedSet.get(neighbor[0]) != None:
+                continue
+
+            t_gScore = gScore[expNode] + neighbor[1]
+            if gScore.get(neighbor[0]) != None and gScore.get(neighbor[0]) <= t_gScore:
+                continue
+
+            cameFrom[neighbor[0]] = expNode
+            gScore[neighbor[0]] = t_gScore
+
+            temp = (gScore[neighbor[0]], neighbor[0])
+            if openSet.get(neighbor[0]) == None:
+                openSet[neighbor[0]] = temp
+                heapq.heappush(openHeap, temp)
+            else:
+                r = openSet[neighbor[0]]
+                r_i = openHeap.index(r)
+                openHeap[r_i] = temp
+                openSet[neighbor[0]] = temp
+                heapq.heapify(openHeap)
+    #return empty list for no path found
+    return [], 0
     # Your code goes here. As the result, the function should
     # return a list of vertex labels, e.g.
     #
@@ -175,16 +230,51 @@ def uniformCostSearch(adjListMap, start, goal):
     #
     # in which 23 would be the label for the start and 37 the
     # label for the goal.
-    
-    return path, pathLength
 
 '''
 Agument roadmap to include start and goal
 '''
 def updateRoadmap(polygons, vertexMap, adjListMap, x1, y1, x2, y2):
-    updatedALMap = dict()
+    updatedALMap = adjListMap.copy() #copy instead because we are returning upated map
     startLabel = 0
     goalLabel = -1
+    start = [x1, y1]
+    goal = [x2, y2]
+
+    #this is supposed to be for making it convient to pass the right polygons as arguments
+    polyMap = dict()
+    for polygon in polygons:
+        for i in vertexMap:
+            v = vertexMap.get(i)
+            if v in polygon:
+                polyMap[i] = polygon
+
+    for i in vertexMap:
+        v = vertexMap.get(i)
+        f_poly = polyMap[i]
+        other_polygons = filter(lambda x: x != f_poly, polygons)
+        bi_start, vis_start = specBitangent(start, v, polyMap[i]), areVisible(start, v, other_polygons)
+        bi_goal, vis_goal = specBitangent(goal, v, polyMap[i]), areVisible(goal, v, other_polygons)
+        if bi_start and vis_start:
+            #add connection from start to v
+            if updatedALMap.get(startLabel) == None:
+                updatedALMap[startLabel] = []
+            start_dist = distance(start, v)
+            updatedALMap[startLabel].append([i, start_dist])
+            if updatedALMap.get(i) == None:
+                updatedALMap[i] = []
+            updatedALMap[i].append([startLabel, start_dist])
+            
+        if bi_goal and vis_goal:
+            #add connection from goal to v
+            if updatedALMap.get(goalLabel) == None:
+                updatedALMap[goalLabel] = []
+            goal_dist = distance(goal, v)
+            updatedALMap[goalLabel].append([i, goal_dist])
+            if updatedALMap.get(i) == None:
+                updatedALMap[i] = []
+            updatedALMap[i].append([goalLabel, goal_dist])
+
 
     # Your code goes here. Note that for convenience, we 
     # let start and goal have vertex labels 0 and -1,

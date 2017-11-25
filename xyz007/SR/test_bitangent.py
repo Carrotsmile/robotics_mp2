@@ -1,6 +1,6 @@
 
 from spr import areBitangent
-
+from spr import specBitangent
 a, b, c = [0, 1], [0, 0], [1, 0]
 poly1 = [a,b,c]
 
@@ -20,3 +20,12 @@ print("should not be bitangent")
 print(areBitangent(b, e, poly1, poly2))
 print("should be bitangent")
 print(areBitangent(a, f, poly1, poly2))
+
+
+print("should not be specBitangent")
+print(specBitangent(e, b, poly1))
+print(specBitangent(b, e, poly2))
+
+print("should be specBitangent")
+print(specBitangent(e, a, poly1))
+print(specBitangent(e, c, poly1))
