@@ -81,14 +81,25 @@ def displayRoadMap(adjList, vertMap):
 '''
 draw the path that the robot takes from start to goal, red
 '''
-def drawPathStartToGoal(path, vertMap):
-    pass
+def drawPathStartToGoal(path, vertMap, start, goal):
+    superMap = vertMap.copy()
+    superMap[0] = start
+    superMap[-1] = goal
+    lines = []
+    pairs = zip(path[:len(path)-1], path[1:])
+    for p1, p2 in pairs:
+        point1 = superMap.get(p1)
+        point2 = superMap.get(p2)
+        lines += [(point1[0]/10, point2[0]/10), (point1[1]/10, point2[1]/10), 'r']
+    return lines
 
-def drawEverything(polygons, adjList, vertMap):
+def drawEverything(polygons, adjList, vertMap, path, start, goal):
     fig, ax = setupPlot()
     lin = displayRoadMap(adjList, vertMap)
     print lin
     plt.plot(*lin)
+    pat = drawPathStartToGoal(path, vertMap, start, goal)
+    plt.plot(*pat)
     for p in range(0, len(polygons)):
         patch = createPolygonPatch(polygons[p])
         ax.add_patch(patch)    

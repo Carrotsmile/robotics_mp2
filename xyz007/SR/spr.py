@@ -379,5 +379,5 @@ if __name__ == "__main__":
     print str(path)
     print "Final path length:" + str(length)
     
-    visualize.drawEverything(polygons, updatedALMap, vertexMap)
+    visualize.drawEverything(polygons, updatedALMap, vertexMap, path, [x1, y1], [x2, y2])
     # Extra visualization elements goes here
