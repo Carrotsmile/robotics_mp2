@@ -263,8 +263,8 @@ def updateRoadmap(polygons, vertexMap, adjListMap, x1, y1, x2, y2):
             updatedALMap[startLabel] = []
         if updatedALMap.get(goalLabel) == None:
             updatedALMap[goalLabel] = []
-        updatedALMap[startLabel].append([goal, distance(start,goal)])
-        updatedALMap[goalLabel].append([goal, distance(start,goal)])
+        updatedALMap[startLabel].append([goalLabel, distance(start,goal)])
+        updatedALMap[goalLabel].append([startLabel, distance(start,goal)])
     for i in vertexMap:
         v = vertexMap.get(i)
         f_poly = polyMap[i]
