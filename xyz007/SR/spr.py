@@ -63,6 +63,12 @@ def areBitangent(v1, v2, poly1, poly2):
     f = isReflexive
     return not ((f(left1, mid1, mid2) != f(right1, mid1, mid2)) or (f(left2, mid2, mid1) != f(right2, mid2, mid1)))
 
+def ccw(A,B,C):
+    return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
+
+# Return true if line segments AB and CD intersect
+def intersect(A,B,C,D):
+    return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
 '''
 test if line segments intersect with each other 
 by solving system of equation for two seperate parametric
@@ -70,13 +76,28 @@ equations
 '''
 def lineSegmentIntersect(a1, a2, b1, b2):
     A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
-    A = np.array([A1-A2, B2-B1])
-    b = (B2 - A2)
+    return intersect(A1, A2, B1, B2)
+    '''
+    A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
+    d = B2[0] * B1[1] - B1[0] * B2[1]
+    if d == 0:
+        return False
+    s = (1/d) * ((A1[0] - A2[0]) * B1[1] - (A1[1] - A2[1]) * B1[0])
+    t = (1/d) * (-1 *(A1[0] - A2[0]) * B2[1] + (A1[1] - A2[1]) * B2[0]) * -1
+    return ((0 <= s <= 1) and (0 <= t <= 1))
+    '''
+    '''
+    A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
+    A = np.array([A1-A2, B2-B1]).transpose()
+    b = (B2 - A2).transpose()
     try:
-        x = np.linalg.lstsq(A, b)
-        return all(map(lambda y: 0 <= y <= 1, x))
+        x = np.linalg.solve(A, b)
+        print x
+        return all(map(lambda y: 0 <= y <= 1, x[0]))
     except:
         return False
+    '''
+    
 
 '''
 Returns True if the two vertices are visible to each other,
@@ -86,8 +107,10 @@ def areVisible(v1, v2, otherPolygons):
     for polygon in otherPolygons:
         for p1, p2 in zip(polygon, polygon[1:] + [polygon[0]]):
             #print((v1, v2, p1, p2))
-            if lineSegmentIntersect(v1, v2, p2, p1) != lineSegmentIntersect(v1, v2, p1, p2):
+            if lineSegmentIntersect(v1, v2, p2, p1) and p1 != v1 and v2 != p2 and p1 != v2 and p2 != v1:
                 return False
+            #if lineSegmentIntersect(v1, v2, p2, p1) != lineSegmentIntersect(v1, v2, p1, p2):
+                #return False
     return True
 
 '''
@@ -132,7 +155,8 @@ def computeSPRoadmap(polygons, reflexVertices):
     polypairs = list(it.combinations(polygons, 2))
     for poly1, poly2 in polypairs:
         pointpairs = list(it.product(poly1, poly2))
-        otherpolies = filter(lambda poly: poly != poly1 and poly != poly2, polygons)
+        #otherpolies = filter(lambda poly: poly != poly1 and poly != poly2, polygons)
+        otherpolies = polygons
         for p1, p2 in pointpairs:
             #check if p1 and p2 are reflex
             i1 = revVertexMap.get(tuple(p1))
@@ -209,7 +233,11 @@ def uniformCostSearch(adjListMap, start, goal):
                         len_results += edge[1]
                         break
             return result_path, len_results
-        for neighbor in adjListMap.get(expNode[1]):
+        #print expNode
+        lip = adjListMap.get(expNode[1])
+        if lip == None:
+            lip = []
+        for neighbor in lip:
             print neighbor
             if closedSet.get(neighbor[0]) != None:
                 continue
@@ -268,7 +296,8 @@ def updateRoadmap(polygons, vertexMap, adjListMap, x1, y1, x2, y2):
     for i in vertexMap:
         v = vertexMap.get(i)
         f_poly = polyMap[i]
-        other_polygons = filter(lambda x: x != f_poly, polygons)
+        #other_polygons = filter(lambda x: x != f_poly, polygons)
+        other_polygons = polygons
         bi_start, vis_start = specBitangent(start, v, polyMap[i]), areVisible(start, v, other_polygons)
         bi_goal, vis_goal = specBitangent(goal, v, polyMap[i]), areVisible(goal, v, other_polygons)
         if bi_start and vis_start:
