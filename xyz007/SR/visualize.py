@@ -2,6 +2,8 @@ import sys
 
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
+from matplotlib import collections  as mc
+import matplotlib.lines as mlines
 import matplotlib.patches as patches
 import numpy as np
 
@@ -61,7 +63,36 @@ def createPolygonPatchForRobot(polygon):
     patch = patches.PathPatch(path, facecolor='gray', lw=1)
 
     return patch
-    
+
+'''
+draw roadmap, drawing a line for each edge that is green
+'''
+def displayRoadMap(adjList, vertMap):
+    lines = []
+    for key in adjList:
+        value_list = adjList.get(key)
+        p1 = vertMap.get(key)
+        for v in value_list:
+            p2 = vertMap.get(v[0])
+            if p1 != None and p2 != None:
+                #lines += [tuple(map(lambda x: x/10., p1)), tuple(map(lambda x: x/10., p2)), 'g']
+                lines += [(p1[0] /10, p2[0] /10), (p1[1] /10, p2[1]/10), 'g']
+    return lines
+'''
+draw the path that the robot takes from start to goal, red
+'''
+def drawPathStartToGoal(path, vertMap):
+    pass
+
+def drawEverything(polygons, adjList, vertMap):
+    fig, ax = setupPlot()
+    lin = displayRoadMap(adjList, vertMap)
+    print lin
+    plt.plot(*lin)
+    for p in range(0, len(polygons)):
+        patch = createPolygonPatch(polygons[p])
+        ax.add_patch(patch)    
+    plt.show()
 
 '''
 Render polygon obstacles  
