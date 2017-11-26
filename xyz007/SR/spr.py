@@ -77,26 +77,6 @@ equations
 def lineSegmentIntersect(a1, a2, b1, b2):
     A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
     return intersect(A1, A2, B1, B2)
-    '''
-    A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
-    d = B2[0] * B1[1] - B1[0] * B2[1]
-    if d == 0:
-        return False
-    s = (1/d) * ((A1[0] - A2[0]) * B1[1] - (A1[1] - A2[1]) * B1[0])
-    t = (1/d) * (-1 *(A1[0] - A2[0]) * B2[1] + (A1[1] - A2[1]) * B2[0]) * -1
-    return ((0 <= s <= 1) and (0 <= t <= 1))
-    '''
-    '''
-    A1, A2, B1, B2 = np.array(a1), np.array(a2), np.array(b1), np.array(b2)
-    A = np.array([A1-A2, B2-B1]).transpose()
-    b = (B2 - A2).transpose()
-    try:
-        x = np.linalg.solve(A, b)
-        print x
-        return all(map(lambda y: 0 <= y <= 1, x[0]))
-    except:
-        return False
-    '''
     
 
 '''
@@ -166,12 +146,26 @@ def computeSPRoadmap(polygons, reflexVertices):
             if v and bi and (i1 != None) and (i2 != None):
                 dis = distance(p1, p2)
                 if(adjacencyListMap.get(i1) == None):
-                    adjacencyListMap.put(i1, [])
+                    adjacencyListMap[i1] = []
                 adjacencyListMap[i1].append([i2, dis])
                 if(adjacencyListMap.get(i2) == None):
-                    adjacencyListMap.put(i2, [])
+                    adjacencyListMap[i2] = []
                 adjacencyListMap[i2].append([i1, dis])
-
+    for poly in polygons:
+        ppairs = list(it.combinations(poly, 2))
+        for p1, p2 in ppairs:
+            v = areVisible(p1, p2, [poly])
+            bi = areBitangent(p1, p2, poly, poly)
+            if v and bi:
+                i1 = revVertexMap.get(tuple(p1))
+                i2 = revVertexMap.get(tuple(p2))
+                dis = distance(p1, p2)
+                if(adjacencyListMap.get(i1) == None):
+                    adjacencyListMap[i1] = []
+                adjacencyListMap[i1].append([i2, dis])
+                if(adjacencyListMap.get(i2) == None):
+                    adjacencyListMap[i2] = []
+                adjacencyListMap[i2].append([i1, dis])
     # Your vertexMap should look like
     # {1: [5.2,6.7], 2: [9.2,2.3], ... }
     #
